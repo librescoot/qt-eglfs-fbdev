@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.16)
+project(qt-eglfs-fbdev LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
+
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui)
+find_package(Qt6EglFSDeviceIntegrationPrivate REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GBM REQUIRED gbm)
+
+qt_add_plugin(qeglfs-fbdev-integration
+    CLASS_NAME QEglFSFbdevIntegrationPlugin
+    PLUGIN_TYPE egldeviceintegrations
+)
+
+target_sources(qeglfs-fbdev-integration PRIVATE
+    qeglfsfbdevmain.cpp
+    qeglfsfbdevintegration.cpp
+    qeglfsfbdevintegration.h
+)
+
+target_include_directories(qeglfs-fbdev-integration PRIVATE
+    ${GBM_INCLUDE_DIRS}
+)
+
+target_link_libraries(qeglfs-fbdev-integration PRIVATE
+    Qt6::Core
+    Qt6::CorePrivate
+    Qt6::Gui
+    Qt6::GuiPrivate
+    Qt6::EglFSDeviceIntegrationPrivate
+    ${GBM_LIBRARIES}
+    EGL
+)
+
+if(NOT QT6_INSTALL_PLUGINS)
+    set(QT6_INSTALL_PLUGINS "lib/qt6/plugins")
+endif()
+
+install(TARGETS qeglfs-fbdev-integration
+    LIBRARY DESTINATION ${QT6_INSTALL_PLUGINS}/egldeviceintegrations
+)
