@@ -25,6 +25,9 @@ target_include_directories(qeglfs-fbdev-integration PRIVATE
     ${GBM_INCLUDE_DIRS}
 )
 
+# The DBC image is headless: make Qt select Mesa's non-X11 EGL types.
+target_compile_definitions(qeglfs-fbdev-integration PRIVATE QT_EGL_NO_X11)
+
 target_link_libraries(qeglfs-fbdev-integration PRIVATE
     Qt6::Core
     Qt6::CorePrivate
