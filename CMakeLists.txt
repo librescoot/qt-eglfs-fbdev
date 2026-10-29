@@ -45,3 +45,24 @@ endif()
 install(TARGETS qeglfs-fbdev-integration
     LIBRARY DESTINATION ${QT6_INSTALL_PLUGINS}/egldeviceintegrations
 )
+
+option(BUILD_TESTING "Build surface format and Qt Quick rendering tests" OFF)
+include(CTest)
+if(BUILD_TESTING)
+    find_package(Qt6 REQUIRED COMPONENTS Quick Test)
+    add_executable(surface-format-test
+        tests/SurfaceFormatTest.cpp
+        qeglfsfbdevintegration.cpp
+    )
+    target_include_directories(surface-format-test PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR} ${GBM_INCLUDE_DIRS}
+    )
+    target_compile_definitions(surface-format-test PRIVATE QT_EGL_NO_X11)
+    target_link_libraries(surface-format-test PRIVATE
+        Qt6::Core Qt6::CorePrivate Qt6::Gui Qt6::GuiPrivate
+        Qt6::Quick Qt6::Test Qt6::EglFSDeviceIntegrationPrivate
+        ${GBM_LIBRARIES} EGL
+    )
+    add_test(NAME surface-format COMMAND surface-format-test)
+    set_tests_properties(surface-format PROPERTIES TIMEOUT 60)
+endif()

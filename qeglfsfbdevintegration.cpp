@@ -146,13 +146,12 @@ qreal QEglFSFbdevIntegration::refreshRate() const
 QSurfaceFormat QEglFSFbdevIntegration::surfaceFormatFor(const QSurfaceFormat &inputFormat) const
 {
     QSurfaceFormat fmt = inputFormat;
-    // Ensure we get a config compatible with our GBM surface
+    // Match the GBM color layout without discarding the depth/stencil buffers
+    // requested by Qt Quick for opaque geometry ordering and clipping.
     fmt.setRedBufferSize(8);
     fmt.setGreenBufferSize(8);
     fmt.setBlueBufferSize(8);
     fmt.setAlphaBufferSize(0);
-    fmt.setDepthBufferSize(0);
-    fmt.setStencilBufferSize(0);
     return fmt;
 }
 
